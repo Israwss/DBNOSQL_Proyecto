@@ -9,11 +9,11 @@ const providers: Provider[] = [
       email: { label: 'Email Address', type: 'email' },
       password: { label: 'Password', type: 'password' },
     },
-    authorize(c) {
+    authorize(c) { 
       if (c.password === '123' && c.email === 'isra@gmail.com') {
         return {
           id: 'test',
-          name: 'Toolpad Demo',
+          name: 'Test User',
           email: String(c.email),
         };
       }

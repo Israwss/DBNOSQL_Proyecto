@@ -88,6 +88,7 @@ export default function DashboardContent() {
                 <PageViewsBarChart />
               </Grid>
             </Grid>
+            {/*  
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Details
             </Typography>
@@ -99,6 +100,7 @@ export default function DashboardContent() {
                 </Stack>
               </Grid>
             </Grid>
+            */}
           </Box>
         </Stack>
       </Box>

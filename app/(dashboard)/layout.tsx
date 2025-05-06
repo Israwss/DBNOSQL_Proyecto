@@ -5,8 +5,7 @@ import { usePathname, useParams } from 'next/navigation';
 import { PageContainer } from '@toolpad/core/PageContainer';
 import Footer from '../components/Footer';
 import SidebarFooterAccount, { ToolbarAccountOverride } from './SidebarFooterAccount';
-import { Box, Chip, Stack, Tooltip, Typography } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Box, Stack, Typography } from '@mui/material';
 
 function CustomAppTitle() {
   return (

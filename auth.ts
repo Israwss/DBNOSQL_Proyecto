@@ -3,25 +3,33 @@ import Credentials from 'next-auth/providers/credentials';
 import type { Provider } from 'next-auth/providers';
 
 const providers: Provider[] = [
- 
   Credentials({
     credentials: {
       email: { label: 'Email Address', type: 'email' },
       password: { label: 'Password', type: 'password' },
     },
-    authorize(c) { 
-      if (c.password === '123' && c.email === 'isra@gmail.com') {
+    authorize(credentials) {
+      const validUsers = [
+        { email: 'isra@gmail.com', password: '123', name: 'Isra' },
+        { email: 'yoshi@gmail.com', password: '123', name: 'Yoshi' },
+      ];
+
+      const user = validUsers.find(
+        (u) => u.email === credentials?.email && u.password === credentials?.password
+      );
+
+      if (user) {
         return {
-          id: 'test',
-          name: 'Test User',
-          email: String(c.email),
+          id: user.email,
+          name: user.name,
+          email: user.email,
         };
       }
+
       return null;
     },
   }),
 ];
-
 
 export const providerMap = providers.map((provider) => {
   if (typeof provider === 'function') {
@@ -41,12 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized({ auth: session, request: { nextUrl } }) {
       const isLoggedIn = !!session?.user;
       const isPublicPage = nextUrl.pathname.startsWith('/public');
-
-      if (isPublicPage || isLoggedIn) {
-        return true;
-      }
-
-      return false; // Redirect unauthenticated users to login page
+      return isPublicPage || isLoggedIn;
     },
   },
 });

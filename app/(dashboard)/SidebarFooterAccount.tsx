@@ -1,9 +1,6 @@
 'use client';
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
-import MenuList from '@mui/material/MenuList';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import Divider from '@mui/material/Divider';
 import {
   Account,
@@ -13,6 +10,10 @@ import {
   SignOutButton,
 } from '@toolpad/core/Account';
 import { SidebarFooterProps } from '@toolpad/core/DashboardLayout';
+
+
+
+
 
 function AccountSidebarPreview(props: AccountPreviewProps & { mini: boolean }) {
   const { handleClick, open, mini } = props;
@@ -33,18 +34,7 @@ function SidebarFooterAccountPopover({ mini }: { mini: boolean }) {
   return (
     <Stack direction="column">
       {mini ? <AccountPreview variant="expanded" /> : null}
-      <MenuList>
-        <Button
-          variant="text"
-          sx={{ textTransform: 'capitalize', display: 'flex', mx: 'auto' }}
-          size="small"
-          fullWidth
-          startIcon={<AddIcon />}
-          disableElevation
-        >
-          Add account
-        </Button>
-      </MenuList>
+     
       <Divider />
       <AccountPopoverFooter>
         <SignOutButton />
@@ -108,6 +98,8 @@ export default function SidebarFooterAccount({ mini }: SidebarFooterProps) {
     />
   );
 }
+
+
 
 export function ToolbarAccountOverride() {
   return null;

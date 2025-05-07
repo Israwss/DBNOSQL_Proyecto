@@ -11,6 +11,9 @@ import SessionsChart from '../components/SessionsChart';
 import PageViewsBarChart from '../components/PageViewsBarChart';
 import CustomTreeView from '../components/CustomTreeView';
 import ChartUserByCountry from '../components/ChartUserByCountry';
+import SeasonChart from './SeasonChart';
+import DayChart from './DayChart';
+import HourChart from './HourChart';
 
 const data: StatCardProps[] = [
   {

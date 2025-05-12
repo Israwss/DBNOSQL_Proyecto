@@ -18,11 +18,10 @@ import HourChart from './HourChart';
 
 import dynamic from 'next/dynamic';
 
-
-// ✅ Carga dinámica del gráfico para evitar errores en SSR
+// ✅ Carga dinámica de gráficos interactivos
 const WeeklyHeatmap = dynamic(() => import('./WeeklyHeatmap'), { ssr: false });
+const SalesForecastChart = dynamic(() => import('./SalesForecastChart'), { ssr: false });
 
-// 🔸 Datos de ejemplo conservados por estructura, puedes quitarlos si no los necesitas
 const data: StatCardProps[] = [
   {
     title: 'Users',
@@ -75,7 +74,7 @@ export default function DashboardContent() {
               Overview
             </Typography>
 
-            {/* ✅ Contenedor de tarjetas y gráfico */}
+            {/* ✅ Contenedor de tarjetas y gráficos */}
             <Grid container spacing={2} columns={12} sx={{ mb: (theme) => theme.spacing(2) }}>
               {data.map((card, index) => (
                 <Grid item key={index} xs={12} sm={6} lg={3}>
@@ -90,6 +89,11 @@ export default function DashboardContent() {
               {/* ✅ Gráfico heatmap semanal */}
               <Grid item xs={12}>
                 <WeeklyHeatmap />
+              </Grid>
+
+              {/* ✅ Gráfico de predicción de ventas */}
+              <Grid item xs={12}>
+                <SalesForecastChart />
               </Grid>
             </Grid>
           </Box>

@@ -6,45 +6,15 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import StatCard, { StatCardProps } from '../components/StatCard';
-import HighlightedCard from '../components/HiglightedCard';
-import SessionsChart from '../components/SessionsChart';
-import PageViewsBarChart from '../components/PageViewsBarChart';
-import CustomTreeView from '../components/CustomTreeView';
-import ChartUserByCountry from '../components/ChartUserByCountry';
+
 import SeasonChart from './SeasonChart';
 import DayChart from './DayChart';
 import HourChart from './HourChart';
 
 import dynamic from 'next/dynamic';
 
-// ✅ Carga dinámica de gráficos interactivos
 const WeeklyHeatmap = dynamic(() => import('./WeeklyHeatmap'), { ssr: false });
 const SalesForecastChart = dynamic(() => import('./SalesForecastChart'), { ssr: false });
-
-const data: StatCardProps[] = [
-  {
-    title: 'Users',
-    value: '14k',
-    interval: 'Last 30 days',
-    trend: 'up',
-    data: new Array(30).fill(0),
-  },
-  {
-    title: 'Conversions',
-    value: '325',
-    interval: 'Last 30 days',
-    trend: 'down',
-    data: new Array(30).fill(0),
-  },
-  {
-    title: 'Event count',
-    value: '200k',
-    interval: 'Last 30 days',
-    trend: 'neutral',
-    data: new Array(30).fill(0),
-  },
-];
 
 export default function DashboardContent() {
   return (
@@ -69,33 +39,44 @@ export default function DashboardContent() {
           }}
         >
           <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-            {/* ✅ Encabezado de sección */}
+
+            {/* ✅ Título */}
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Overview
             </Typography>
 
-            {/* ✅ Contenedor de tarjetas y gráficos */}
-            <Grid container spacing={2} columns={12} sx={{ mb: (theme) => theme.spacing(2) }}>
-              {data.map((card, index) => (
-                <Grid item key={index} xs={12} sm={6} lg={3}>
-                  <StatCard {...card} />
-                </Grid>
-              ))}
-
-              <Grid item xs={12} sm={6} lg={3}>
-                <HighlightedCard />
-              </Grid>
-
-              {/* ✅ Gráfico heatmap semanal */}
-              <Grid item xs={12}>
-                <WeeklyHeatmap />
-              </Grid>
-
-              {/* ✅ Gráfico de predicción de ventas */}
-              <Grid item xs={12}>
-                <SalesForecastChart />
-              </Grid>
+            {/* 🟥 Espacios para KPI cards */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
+              <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
+              <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
             </Grid>
+            
+            {/* 🟦 Serie de tiempo + gráfico de hora lado a lado */}
+            <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+              {/* Serie de tiempo */}
+              <Box sx={{ flex: 3 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}></Typography>
+                <SalesForecastChart />
+                <Typography variant="subtitle1" sx={{ mb: 1 }}></Typography>
+              <WeeklyHeatmap />
+              </Box>
+              <Box sx={{ flex: 2 }}>
+                {/* 🟨 Gráfico por hora */}
+                <Typography variant="subtitle1" sx={{ mb: 1 }}></Typography>
+                <HourChart />
+                {/* 🟩 Día */}
+                <Typography variant="subtitle1" sx={{ mb: 1 }}></Typography>
+                <DayChart />
+                 {/* 🟩 Season */}
+                <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}></Typography>
+                <SeasonChart />
+              </Box>
+            </Box>
+            {/* 🟧 Heatmap */}
+            <Box sx={{ mt: 4 }}>
+              
+            </Box>
           </Box>
         </Stack>
       </Box>

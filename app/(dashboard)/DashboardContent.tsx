@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import StatCard, { StatCardProps } from '../components/StatCard';
 import HighlightedCard from '../components/HiglightedCard';
 import SessionsChart from '../components/SessionsChart';
 import PageViewsBarChart from '../components/PageViewsBarChart';
@@ -17,34 +16,10 @@ import DayChart from './DayChart';
 import HourChart from './HourChart';
 
 import dynamic from 'next/dynamic';
+import KpiCards from './KpiCards';
 
-// ✅ Carga dinámica de gráficos interactivos
 const WeeklyHeatmap = dynamic(() => import('./WeeklyHeatmap'), { ssr: false });
 const SalesForecastChart = dynamic(() => import('./SalesForecastChart'), { ssr: false });
-
-const data: StatCardProps[] = [
-  {
-    title: 'Users',
-    value: '14k',
-    interval: 'Last 30 days',
-    trend: 'up',
-    data: new Array(30).fill(0),
-  },
-  {
-    title: 'Conversions',
-    value: '325',
-    interval: 'Last 30 days',
-    trend: 'down',
-    data: new Array(30).fill(0),
-  },
-  {
-    title: 'Event count',
-    value: '200k',
-    interval: 'Last 30 days',
-    trend: 'neutral',
-    data: new Array(30).fill(0),
-  },
-];
 
 export default function DashboardContent() {
   return (
@@ -69,19 +44,16 @@ export default function DashboardContent() {
           }}
         >
           <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-            {/* ✅ Encabezado de sección */}
+            {/* ✅ Título de la sección */}
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Overview
             </Typography>
 
-            {/* ✅ Contenedor de tarjetas y gráficos */}
-            <Grid container spacing={2} columns={12} sx={{ mb: (theme) => theme.spacing(2) }}>
-              {data.map((card, index) => (
-                <Grid item key={index} xs={12} sm={6} lg={3}>
-                  <StatCard {...card} />
-                </Grid>
-              ))}
+            {/* ✅ KPI Cards en su propio bloque */}
+            <KpiCards />
 
+            {/* ✅ Tarjeta destacada */}
+            <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
               <Grid item xs={12} sm={6} lg={3}>
                 <HighlightedCard />
               </Grid>

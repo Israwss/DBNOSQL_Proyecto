@@ -2,7 +2,7 @@
 import { DataModel, DataSource, DataSourceCache } from '@toolpad/core/Crud';
 import { z } from 'zod';
 
-type EmployeeRole = 'Market' | 'Finance' | 'Development';
+type EmployeeRole = 'Main Consultant' | 'Finantial Analyst' | 'Business Development Director' | 'Marketing' | 'Operations';
 
 export interface Employee extends DataModel {
   id: number;
@@ -106,8 +106,8 @@ export const employeesDataSource: DataSource<Employee> = {
     joinDate: z
       .string({ required_error: 'Join date is required' })
       .nonempty('Join date is required'),
-    role: z.enum(['Market', 'Finance', 'Development'], {
-      errorMap: () => ({ message: 'Role must be "Market", "Finance" or "Development"' }),
+    role: z.enum(['Main Consultant', 'Finantial Analyst', 'Business Development Director', 'Marketing', 'Operations'], {
+      errorMap: () => ({ message: 'Role must be one of the valid EmployeeRole values' }),
     }),
   })['~standard'].validate,
 };

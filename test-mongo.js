@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-const uri = "mongodb+srv://pizza:pizza@yoshicluster.xhtic7n.mongodb.net/pizzaDB?retryWrites=true&w=majority";
+const uri = "mongodb+srv://israel:123@yoshicluster.xhtic7n.mongodb.net/pizzaDB?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri, {
   tls: true,

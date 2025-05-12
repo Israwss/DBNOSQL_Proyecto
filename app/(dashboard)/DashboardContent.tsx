@@ -6,12 +6,17 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
+import HighlightedCard from '../components/HiglightedCard';
+import SessionsChart from '../components/SessionsChart';
+import PageViewsBarChart from '../components/PageViewsBarChart';
+import CustomTreeView from '../components/CustomTreeView';
+import ChartUserByCountry from '../components/ChartUserByCountry';
 import SeasonChart from './SeasonChart';
 import DayChart from './DayChart';
 import HourChart from './HourChart';
 
 import dynamic from 'next/dynamic';
+import KpiCards from './KpiCards';
 
 const WeeklyHeatmap = dynamic(() => import('./WeeklyHeatmap'), { ssr: false });
 const SalesForecastChart = dynamic(() => import('./SalesForecastChart'), { ssr: false });
@@ -39,8 +44,6 @@ export default function DashboardContent() {
           }}
         >
           <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-
-            {/* ✅ Título */}
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Overview
             </Typography>
@@ -50,6 +53,24 @@ export default function DashboardContent() {
               <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
               <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
               <Grid item xs={12} md={4}><Box sx={{ height: 100, border: '1px dashed gray' }} /></Grid>
+            {/* ✅ KPI Cards en su propio bloque */}
+            <KpiCards />
+
+            {/* ✅ Tarjeta destacada */}
+            <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
+              <Grid item xs={12} sm={6} lg={3}>
+                <HighlightedCard />
+              </Grid>
+
+              {/* ✅ Gráfico heatmap semanal */}
+              <Grid item xs={12}>
+                <WeeklyHeatmap />
+              </Grid>
+
+              {/* ✅ Gráfico de predicción de ventas */}
+              <Grid item xs={12}>
+                <SalesForecastChart />
+              </Grid>
             </Grid>
             
             {/* 🟦 Serie de tiempo + gráfico de hora lado a lado */}

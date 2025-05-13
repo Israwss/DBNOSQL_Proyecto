@@ -44,23 +44,18 @@ export default function TopIngredientesChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: 420 }}>
       <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
-        Top  Ingredientes Más Usados
+        Top Ingredientes Más Usados
       </Typography>
       <BarChart
+        height={420}
         dataset={dataset}
-        barLabel={(item, context) => {
-          const current = dataset[item.dataIndex];
-          return current ? `${current.ingrediente} - ${current.gramos.toFixed(0)}g` : null;
-        }}
+        barLabel="value"
         yAxis={[
           {
             scaleType: 'band',
             dataKey: 'ingrediente',
-            tickLabelStyle: {
-              display: 'none',
-            },
           },
         ]}
         series={[
@@ -71,8 +66,13 @@ export default function TopIngredientesChart() {
           },
         ]}
         layout="horizontal"
-        xAxis={[{ label: 'Gramos', tickMinStep: 1 }]}
-        margin={{ left: 150, right: 20, top: 20, bottom: 70 }}
+        xAxis={[
+          {
+            label: 'Gramos',
+            tickMinStep: 1,
+          },
+        ]}
+        margin={{ left: 100, right: 20, top: 20, bottom: 70 }}
         sx={{
           '& .MuiChartsAxis-tickLabel': {
             overflow: 'visible',
@@ -87,7 +87,6 @@ export default function TopIngredientesChart() {
             fill: '#333',
           },
         }}
-        height={500}
       />
     </Box>
   );

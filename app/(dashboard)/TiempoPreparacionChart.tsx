@@ -50,19 +50,46 @@ export default function TiempoPreparacionChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: 500 }}>
+    <Box sx={{ width: '100%', height: 420 }}>
+      <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
+        Tiempo Mediano de Preparación por Categoría
+      </Typography>
       <BarChart
-        dataset={dataset}
-        xAxis={[{ scaleType: 'band', dataKey: 'category', label: 'Categoría', tickLabelStyle: { angle: -45, textAnchor: 'end' } }]}
-        yAxis={[{
-          label: 'Minutos',
-          valueFormatter: timeFormatter,
-          min: 24,
-          max: 26,
-        }]}
-        series={[{ dataKey: 'median_time', label: 'Tiempo mediano' }]}
-        height={500}
-      />
+  height={420}
+  dataset={dataset}
+  barLabel="value"
+  xAxis={[{
+    scaleType: 'band',
+    data: dataset.map((item) => item.category),  // 👈 Aquí defines las etiquetas
+    label: 'Categoría',
+    tickLabelStyle: {
+      angle: -45,
+      textAnchor: 'end',
+      fontSize: 12,
+    }
+  }]}
+  yAxis={[{
+    label: 'Minutos',
+    valueFormatter: timeFormatter,
+    min: 24,
+    max: 26,
+  }]}
+  series={[{
+    dataKey: 'median_time',
+    label: 'Tiempo mediano',
+    color: '#FFC067',
+  }]}
+  sx={{
+    '& .MuiChartsBarLabel-root': {
+      fontSize: 13,
+      fill: '#333',
+    },
+    '& .MuiChartsAxis-tickLabel': {
+      fontSize: 12,
+    }
+  }}
+/>
+
     </Box>
   );
 }

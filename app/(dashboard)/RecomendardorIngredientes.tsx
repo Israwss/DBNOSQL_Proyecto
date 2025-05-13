@@ -1,11 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Box, TextField, CircularProgress } from '@mui/material';
+import { Box, TextField, CircularProgress, Typography } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-
-
 
 interface Recomendacion {
   id: number;
@@ -27,35 +25,34 @@ export default function RecomendadorIngredientes() {
   }, []);
 
   const handleSeleccion = async (ing: string | null) => {
-  setIngrediente(ing);
-  if (!ing) return;
-  setResultados([]);
+    setIngrediente(ing);
+    if (!ing) return;
+    setResultados([]);
 
-  try {
-    const res = await fetch(`/api/ingredientes/recomendaciones?ingrediente=${encodeURIComponent(ing)}`);
-    if (!res.ok) {
-      console.error('API error:', res.statusText);
-      return;
+    try {
+      const res = await fetch(`/api/ingredientes/recomendaciones?ingrediente=${encodeURIComponent(ing)}`);
+      if (!res.ok) {
+        console.error('API error:', res.statusText);
+        return;
+      }
+
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        console.error('Respuesta inesperada del servidor:', data);
+        return;
+      }
+
+      setResultados(
+        data.map((item: any, i: number) => ({
+          id: i + 1,
+          combinacion: item.itemset.join(', '),
+          promedio_ventas: parseFloat(item.promedio.toFixed(2)),
+        }))
+      );
+    } catch (err) {
+      console.error('Error al obtener recomendaciones:', err);
     }
-
-    const data = await res.json();
-    if (!Array.isArray(data)) {
-      console.error('Respuesta inesperada del servidor:', data);
-      return;
-    }
-
-    setResultados(
-      data.map((item: any, i: number) => ({
-        id: i + 1,
-        combinacion: item.itemset.join(', '),
-        promedio_ventas: parseFloat(item.promedio.toFixed(2)),
-      }))
-    );
-  } catch (err) {
-    console.error('Error al obtener recomendaciones:', err);
-  }
-};
-
+  };
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: '#', width: 50 },
@@ -70,19 +67,24 @@ export default function RecomendadorIngredientes() {
       ) : (
         <Autocomplete
           options={ingredientes}
-          sx={{ width: 400 }}
+          sx={{ width: 400, mt: 2 }}
           onChange={(_, value) => handleSeleccion(value)}
           renderInput={(params) => <TextField {...params} label="Elige un ingrediente" />}
         />
       )}
 
-      <Box sx={{ height: 400 }}>
-        <DataGrid
-          rows={resultados}
-          columns={columns}
-          pageSizeOptions={[5, 10]}
-          disableRowSelectionOnClick
-        />
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Combinaciones recomendadas y su promedio de ventas
+        </Typography>
+        <Box sx={{ height: 400 }}>
+          <DataGrid
+            rows={resultados}
+            columns={columns}
+            pageSizeOptions={[5, 10]}
+            disableRowSelectionOnClick
+          />
+        </Box>
       </Box>
     </Box>
   );

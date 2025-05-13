@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import dynamic from 'next/dynamic';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -48,20 +48,26 @@ export default function HistogramaPreparacionChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: 500 }}>
-      <Plot
-        data={traces}
-        layout={{
-          barmode: 'stack',
-          title: 'Distribución de tiempo de preparación por tamaño de pizza',
-          xaxis: { title: 'Tiempo de preparación' },
-          yaxis: { title: 'Cantidad de pizzas' },
-          legend: { title: { text: 'Tamaño' }, traceorder: 'reversed' },
-          height: 500,
-          margin: { t: 60, l: 60, r: 30, b: 60 },
-        }}
-        config={{ responsive: true }}
-      />
+    <Box sx={{ width: 500 }}>
+      <Typography variant="h6" sx={{ textAlign: 'center', mb: 2 }}>
+        Distribución de tiempo de preparación por tamaño de pizza
+      </Typography>
+      <Box sx={{ height: 500 }}>
+        <Plot
+          data={traces}
+          layout={{
+            barmode: 'stack',
+            title: '', // Ya no lo repetimos aquí
+            xaxis: { title: 'Tiempo de preparación' },
+            yaxis: { title: 'Cantidad de pizzas' },
+            legend: { title: { text: 'Tamaño' }, traceorder: 'reversed' },
+            height: 450,
+            width: 500,
+            margin: { t: 30, l: 60, r: 30, b: 60 },
+          }}
+          config={{ responsive: true }}
+        />
+      </Box>
     </Box>
   );
 }

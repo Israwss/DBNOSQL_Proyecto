@@ -11,13 +11,13 @@ interface FunnelDataItem {
 
 function FunnelWrapper({ title, data }: { title: string; data: FunnelDataItem[] }) {
   return (
-    <Box sx={{ width: '100%', maxWidth: 500, height: 500 }}>
+    <Box sx={{ width: '100%', maxWidth: 500, height: 420 }}>
       <Typography variant="h6" sx={{ mb: 1 }}>
         {title}
       </Typography>
       <ResponsiveFunnel
         data={data.map((d, i) => ({ ...d, id: d.label || i }))}
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        margin={{ top: 20, right: 20, bottom: 30, left: 20 }}
         valueFormat=">-.4s"
         colors={{ scheme: 'spectral' }}
         borderWidth={20}

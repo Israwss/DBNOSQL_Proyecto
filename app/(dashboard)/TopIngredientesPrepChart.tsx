@@ -44,14 +44,44 @@ export default function TopIngredientesPrepChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: 700 }}>
+    <Box sx={{ width: '100%', height: 500 }}>
+      <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
+        Ingredientes con Mayor Tiempo Promedio de Preparación
+      </Typography>
       <BarChart
+        height={500}
         dataset={dataset}
-        yAxis={[{ scaleType: 'band', dataKey: 'ingrediente' }]}
-        series={[{ dataKey: 'tiempo', label: 'Tiempo promedio (min)' }]}
         layout="horizontal"
-        height={700}
-        xAxis={[{ label: 'Minutos', min: 25, max: 28 }]}
+        barLabel="value"
+        yAxis={[{
+          scaleType: 'band',
+          dataKey: 'ingrediente',
+        }]}
+        xAxis={[{
+          label: 'Minutos',
+          min: 25,
+          max: 28,
+        }]}
+        series={[{
+          dataKey: 'tiempo',
+          label: 'Tiempo promedio (min)',
+          color: '#FFC067',
+        }]}
+        margin={{ left: 100, right: 20, top: 20, bottom: 70 }}
+        sx={{
+          '& .MuiChartsAxis-tickLabel': {
+            overflow: 'visible',
+            whiteSpace: 'nowrap',
+            textOverflow: 'clip',
+          },
+          '& .MuiBarElement-root': {
+            strokeWidth: 0,
+          },
+          '& .MuiChartsBarLabel-root': {
+            fontSize: 13,
+            fill: '#333',
+          },
+        }}
       />
     </Box>
   );

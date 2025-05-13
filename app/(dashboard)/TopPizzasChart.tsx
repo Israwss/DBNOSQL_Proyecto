@@ -47,55 +47,56 @@ export default function TopPizzasChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: 420 }}>
       <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
         Top 5 Pizzas Más Vendidas
       </Typography>
       <BarChart
-  dataset={dataset}
-  barLabel={(item, context) => {
-    const current = dataset[item.dataIndex];
-    return current ? `${current.name} - ${current.ventas}` : null;
-  }}
-  yAxis={[{
-    scaleType: 'band',
-    dataKey: 'name',
-    tickLabelStyle: {
-      display: 'none',
-    },
-  }]}
-  series={[{
-    dataKey: 'ventas',
-    label: 'Total Vendidas',
-    color: '#FFC067',
-  }]}
-  layout="horizontal"
-  xAxis={[{
-    label: 'Ventas',
-    tickMinStep: 1,
-  }]}
-  margin={{
-    left: 150,
-    right: 20,
-    top: 20,
-    bottom: 70,
-  }}
-  sx={{
-    '& .MuiChartsAxis-tickLabel': {
-      overflow: 'visible',
-      whiteSpace: 'nowrap',
-      textOverflow: 'clip',
-    },
-    '& .MuiBarElement-root': {
-      strokeWidth: 0,
-    },
-    '& .MuiChartsBarLabel-root': {
-      fontSize: 13,
-      fill: '#333',
-    },
-  }}
-/>
-
+        height={420}
+        dataset={dataset}
+        barLabel="value"
+        yAxis={[
+          {
+            scaleType: 'band',
+            dataKey: 'name',
+          },
+        ]}
+        series={[
+          {
+            dataKey: 'ventas',
+            label: 'Total Vendidas',
+            color: '#FFC067',
+          },
+        ]}
+        layout="horizontal"
+        xAxis={[
+          {
+            label: 'Ventas',
+            tickMinStep: 1,
+          
+          },
+        ]}
+        margin={{
+          left: 100,
+          right: 20,
+          top: 20,
+          bottom: 70,
+        }}
+        sx={{
+          '& .MuiChartsAxis-tickLabel': {
+            overflow: 'visible',
+            whiteSpace: 'nowrap',
+          
+          },
+          '& .MuiBarElement-root': {
+            strokeWidth: 0,
+          },
+          '& .MuiChartsBarLabel-root': {
+            fontSize: 13,
+            fill: '#333',
+          },
+        }}
+      />
     </Box>
   );
 }

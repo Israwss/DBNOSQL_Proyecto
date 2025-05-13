@@ -180,7 +180,7 @@ export default function PizzaEvaluationChart() {
 
 
   return (
-    <Box sx={{ width: '100%', height: 500 }}>
+    <Box sx={{ width: '100%', height: 320 }}>
       <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
         Estrategia de Producto por Pizza
       </Typography>
@@ -188,7 +188,7 @@ export default function PizzaEvaluationChart() {
   series={series}
   xAxis={[{ label: 'Total unidades vendidas' }]}
   yAxis={[{ label: 'Precio promedio ($)' }]}
-  height={500}
+  height={400}
   margin={{ top: 40, right: 30, left: 70, bottom: 50 }}
   grid={{ horizontal: true, vertical: true }}
   slots={{ marker: CustomMarker }}

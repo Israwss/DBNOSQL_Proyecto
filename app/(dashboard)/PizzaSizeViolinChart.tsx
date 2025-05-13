@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import dynamic from 'next/dynamic';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -47,19 +47,23 @@ export default function PizzaSizeViolinChart() {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: 500 }}>
-      <Plot
-        data={violinSeries}
-        layout={{
-          title: 'Distribución del tiempo por tamaño de pizza',
-          yaxis: { title: 'Minutos de preparación' },
-          xaxis: { title: 'Tamaño' },
-          width: 800,
-          height: 500,
-          margin: { t: 50, l: 50, r: 30, b: 80 },
-        }}
-        config={{ responsive: true }}
-      />
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="h6" sx={{ textAlign: 'center', mb: 2 }}>
+        Distribución del tiempo por tamaño de pizza
+      </Typography>
+      <Box sx={{ height: 500 }}>
+        <Plot
+          data={violinSeries}
+          layout={{
+            yaxis: { title: 'Minutos de preparación' },
+            xaxis: { title: 'Tamaño' },
+            width: 500,
+            height: 500,
+            margin: { t: 30, l: 50, r: 30, b: 80 },
+          }}
+          config={{ responsive: true }}
+        />
+      </Box>
     </Box>
   );
 }

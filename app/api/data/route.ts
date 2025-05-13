@@ -8,28 +8,49 @@ export async function GET() {
     const collection = db.collection("menu");
 
     const data = await collection.aggregate([
+      // 1. Filtrar registros que tienen order_date
       {
         $match: {
           order_date: { $exists: true }
         }
       },
+      // 2. Convertir order_date a tipo fecha (Date)
+      {
+        $addFields: {
+          order_date_date: {
+            $toDate: "$order_date"
+          }
+        }
+      },
+      // 3. Agrupar por día de la semana
       {
         $group: {
           _id: {
-            $dayOfWeek: { $toDate: "$order_date" } // 1=Sunday, 2=Monday, ..., 7=Saturday
+            $dayOfWeek: "$order_date_date" // 1 = Sunday, ..., 7 = Saturday
           },
           total: { $sum: "$quantity" }
         }
       },
+      // 4. Ajustar para que Lunes = 0, ..., Domingo = 6
+      {
+        $addFields: {
+          dayOfWeek: {
+            $mod: [{ $add: ["$_id", 5] }, 7]
+          }
+        }
+      },
+      // 5. Proyección limpia
       {
         $project: {
-          dayOfWeek: {
-            $mod: [{ $add: ["$_id", 5] }, 7] // Convierte Sunday(1)→6, Monday(2)→0, ..., Saturday(7)→5
-          },
+          _id: 0,
+          dayOfWeek: 1,
           total: 1
         }
       },
-      { $sort: { dayOfWeek: 1 } }
+      // 6. Ordenar cronológicamente
+      {
+        $sort: { dayOfWeek: 1 }
+      }
     ]).toArray();
 
     return NextResponse.json(data);

@@ -35,44 +35,52 @@ export default function TopPizzasLealesChart() {
   }
 
   if (data.length === 0) {
-    return <Typography>No loyalty data available.</Typography>;
+    return <Typography>No hay datos de lealtad disponibles.</Typography>;
   }
 
-  const dataset = data.map((item) => ({
-    pizza: item.pizza_name,
-    lealtad: parseFloat((item.proporcion_lealtad * 100).toFixed(2)), // en porcentaje
+  const cleanName = (name: string) =>
+    name.replace(/\b(The|Pizza)\b/gi, '').trim();
+
+  const dataset = data.map((pizza) => ({
+    name: cleanName(pizza.pizza_name),
+    lealtad: pizza.proporcion_lealtad,
   }));
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: 420 }}>
       <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
-        use client
+        Top Pizzas con Mayor Proporción de Clientes Leales
       </Typography>
       <BarChart
+        height={420}
         dataset={dataset}
-        barLabel={(item, context) => {
-          const current = dataset[item.dataIndex];
-          return current ? `${current.pizza} - ${current.lealtad}%` : null;
-        }}
+        barLabel="value"
         yAxis={[
           {
             scaleType: 'band',
-            dataKey: 'pizza',
-            tickLabelStyle: {
-              display: 'none',
-            },
+            dataKey: 'name',
           },
         ]}
         series={[
           {
             dataKey: 'lealtad',
-            label: '% pedidos clientes leales',
+            label: 'Proporción Leal',
             color: '#FFC067',
           },
         ]}
         layout="horizontal"
-        xAxis={[{ label: '% lealtad', tickMinStep: 5 }]}
-        margin={{ left: 150, right: 20, top: 20, bottom: 70 }}
+        xAxis={[
+          {
+            label: 'Proporción de Lealtad',
+            tickFormat: (v) => `${(v * 100).toFixed(1)}%`,
+          },
+        ]}
+        margin={{
+          left: 150,
+          right: 20,
+          top: 20,
+          bottom: 70,
+        }}
         sx={{
           '& .MuiChartsAxis-tickLabel': {
             overflow: 'visible',
@@ -87,7 +95,6 @@ export default function TopPizzasLealesChart() {
             fill: '#333',
           },
         }}
-        height={500}
       />
     </Box>
   );

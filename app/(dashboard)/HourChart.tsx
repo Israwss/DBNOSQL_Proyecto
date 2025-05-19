@@ -9,13 +9,13 @@ if (typeof Highcharts === 'object') {
   HighchartsMore(Highcharts);
 }
 
-export default function RadialChart() {
+export default function HourChart() {
   const [options, setOptions] = useState<any>(null);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const [totalVentas, setTotalVentas] = useState<number>(0);
   const [mall, setMall] = useState<string>('all');
   const [mallsDisponibles, setMallsDisponibles] = useState<string[]>([]);
+  const [totalVentas, setTotalVentas] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,36 +33,22 @@ export default function RadialChart() {
       setError(null);
     }
 
-    fetch('/api/data/rawdata')
+    fetch(`/api/data/rawdata?start=${startDate}&end=${endDate}&mall=${mall}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then(({ data, malls }) => {
         const horas = Array(24).fill(0);
         const cantidades = Array(24).fill(0);
         let total = 0;
-        const malls = new Set<string>();
 
-        data.forEach((d: any) => {
-          if (!d.order_date || !d.order_time || !d.total_price || !d.mall || !d.quantity) return;
-
-          malls.add(d.mall);
-
-          const date = new Date(`${d.order_date}T${d.order_time}`);
-          if (isNaN(date.getTime())) return;
-          if (date < start || date > end) return;
-
-          if (mall !== 'all' && d.mall !== mall) return;
-
-          const hour = date.getHours();
-          const price = parseFloat(d.total_price);
-          const qty = parseInt(d.quantity);
-
-          if (!isNaN(price)) horas[hour] += price;
-          if (!isNaN(qty)) cantidades[hour] += qty;
-          if (!isNaN(price)) total += price;
+        data.forEach((item: any) => {
+          const hour = item.hour;
+          horas[hour] = item.ventas;
+          cantidades[hour] = item.pizzas;
+          total += item.ventas;
         });
 
         setTotalVentas(total);
-        setMallsDisponibles(Array.from(malls).sort());
+        setMallsDisponibles(malls);
 
         setOptions({
           chart: {
@@ -70,9 +56,7 @@ export default function RadialChart() {
             type: 'column',
             backgroundColor: 'transparent',
             animation: true,
-            style: {
-              fontFamily: 'Arial'
-            }
+            style: { fontFamily: 'Arial' }
           },
           title: { text: '' },
           xAxis: {
@@ -100,7 +84,7 @@ export default function RadialChart() {
               const hora = this.x;
               const venta = this.points?.find(p => p.series.name === 'Ventas por hora')?.y?.toFixed(2) ?? '0';
               const cantidad = cantidades[idx];
-              return `<b>${hora}</b><br/>Ventas: $${venta}<br/>Pizzas: ${cantidad}`;
+              return `<b>${hora}</b><br/>💵 Ventas: $${venta}<br/>🍕 Pizzas: ${cantidad}`;
             }
           },
           legend: {
@@ -135,7 +119,7 @@ export default function RadialChart() {
   return (
     <div style={{ fontFamily: 'Arial', maxWidth: 800, margin: '0 auto' }}>
       <h2 style={{ fontFamily: 'Arial Black', fontSize: '1.5rem', marginBottom: '1rem' }}>
-         Ventas por Hora
+        Ventas por Hora
       </h2>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
@@ -184,7 +168,7 @@ export default function RadialChart() {
       )}
 
       <div style={{ fontFamily: 'Arial Black', fontSize: '1.2rem', color: '#2e7d32', marginBottom: '1rem' }}>
-         Total vendido: ${totalVentas.toFixed(2)}
+        Total vendido: ${totalVentas.toFixed(2)}
       </div>
 
       {options ? (

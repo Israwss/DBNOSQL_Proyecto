@@ -68,10 +68,9 @@ export default function Layout(props: { children: React.ReactNode }) {
         sidebarFooter: SidebarFooterAccount,
       }}
     >
-      <PageContainer title={title}>
-        {props.children}
-       
-      </PageContainer>
+      <Box sx={{ p: 3 }}>
+  {props.children}
+</Box>
       <Footer/>
     </DashboardLayout>
   );

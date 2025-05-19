@@ -4,39 +4,24 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
+interface SeasonalSale {
+  quarter: number;
+  year: number;
+  total_sales: number;
+}
+
 export default function SeasonChart() {
   const [options, setOptions] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/data/rawdata')
+    fetch('/api/data/season')
+
       .then((res) => res.json())
-      .then((data) => {
-        const salesByQuarter: Record<string, number> = {};
-
-        data.forEach((d: any) => {
-          const date = new Date(d.order_date);
-          if (isNaN(date.getTime()) || date.getFullYear() < 2015) return;
-
-          const year = date.getFullYear();
-          const month = date.getMonth();
-          const quarter = Math.floor(month / 3) + 1;
-          const key = `${quarter} ${year}`;
-
-          const price = parseFloat(d.total_price);
-          if (!isNaN(price)) {
-            salesByQuarter[key] = (salesByQuarter[key] || 0) + price;
-          }
-        });
-
-        const categories = Object.keys(salesByQuarter).sort((a, b) => {
-          const [qa, ya] = a.split(' ');
-          const [qb, yb] = b.split(' ');
-          return parseInt(ya) === parseInt(yb)
-            ? parseInt(qa) - parseInt(qb)
-            : parseInt(ya) - parseInt(yb);
-        });
-
-        const values = categories.map((key) => salesByQuarter[key]);
+      .then((data: SeasonalSale[]) => {
+        const categories = data.map(
+          ({ quarter, year }) => `Q${quarter} ${year}`
+        );
+        const values = data.map((d) => d.total_sales);
 
         setOptions({
           chart: {

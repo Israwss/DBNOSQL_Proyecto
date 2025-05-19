@@ -6,7 +6,16 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db('pizzaDB');
+
+    // Filtrar solo sucursales con coordenadas válidas
     const branches = await db.collection('menu').aggregate([
+      {
+        $match: {
+          lat: { $exists: true, $ne: null },
+          lon: { $exists: true, $ne: null },
+          mall: { $exists: true, $ne: null },
+        },
+      },
       {
         $group: {
           _id: '$mall',
@@ -30,3 +39,4 @@ export async function GET() {
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
+

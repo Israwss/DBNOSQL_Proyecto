@@ -3,32 +3,51 @@
 import * as React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import CustomDataGrid from '../../components/CustomDataGrid';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from 'next/link';
 
 interface Pizza {
   id: number;
   pizza_id: string;
   pizza_size: string;
   pizza_category: string;
-  pizza_ingredients: Record<string, string>; // Ej: { Cheese: "50g" }
+  pizza_ingredients: Record<string, string>;
   pizza_name: string;
 }
 
 export default function PizzasPage() {
   const [rows, setRows] = React.useState<Pizza[]>([]);
+  const [totalRows, setTotalRows] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
+  const [paginationModel, setPaginationModel] = React.useState({
+    page: 0,
+    pageSize: 8,
+  });
 
-  React.useEffect(() => {
-    fetch('/api/pizzas')
+  const fetchPizzas = React.useCallback(() => {
+    const { page, pageSize } = paginationModel;
+    setLoading(true);
+
+    fetch(`/api/pizzas?skip=${page * pageSize}&limit=${pageSize}`)
       .then((res) => res.json())
-      .then((data) => {
-        setRows(data);
+      .then((json) => {
+        setRows(json.data);
+        setTotalRows(json.total);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Error fetching pizzas:', err);
         setLoading(false);
       });
-  }, []);
+  }, [paginationModel]);
+
+  React.useEffect(() => {
+    fetchPizzas();
+  }, [fetchPizzas]);
+
+  const handlePaginationChange = (newModel: typeof paginationModel) => {
+    setPaginationModel(newModel);
+  };
 
   const columns = [
     { field: 'pizza_id', headerName: 'ID Pizza', width: 180 },
@@ -46,7 +65,7 @@ export default function PizzasPage() {
     },
   ];
 
-  if (loading) {
+  if (loading && rows.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress />
@@ -59,18 +78,23 @@ export default function PizzasPage() {
   }
 
   return (
-  <Box sx={{ flexGrow: 1, px: 3, pb: 8, overflow: 'hidden' }}>
-    <Box sx={{ height: 'calc(100vh - 160px)', maxHeight: 700, width: '100%' }}>
-      <CustomDataGrid rows={rows} columns={columns} pageSizeOptions={[8]}  initialState={{
-    pagination: {
-      paginationModel: {
-        pageSize: 8,
-        page: 0,
-      },
-    },
-  }} />
+    <Box sx={{ flexGrow: 1, px: 3, pb: 8, overflow: 'hidden' }}>
+      <Breadcrumbs>
+        <Link href="/">Dashboard</Link>
+        <Typography>Pizzas</Typography>
+      </Breadcrumbs>
+      <Typography variant="h4">Pizzas</Typography>
+      <Box sx={{ height: 'calc(100vh - 160px)', maxHeight: 700, width: '100%' }}>
+        <CustomDataGrid
+          rows={rows}
+          columns={columns}
+          rowCount={totalRows}
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={handlePaginationChange}
+          pageSizeOptions={[8]}
+        />
+      </Box>
     </Box>
-  </Box>
-);
-
+  );
 }

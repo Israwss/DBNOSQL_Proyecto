@@ -1,44 +1,55 @@
 import clientPromise from "@/lib/mongo";
 import { NextResponse } from "next/server";
 
-function parseIngredientes(raw: any): Record<string, string> {
-  if (typeof raw === 'string') return JSON.parse(raw);
-  return raw;
-}
-
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const pizza_category = url.searchParams.get("pizza_category");
+    const pizza_size = url.searchParams.get("pizza_size");
+
     const client = await clientPromise;
     const db = client.db("pizzaDB");
-    const collection = db.collection("menu");
 
-    const data = await collection
-      .find({ pizza_ingredients: { $exists: true }, total_price: { $exists: true } })
-      .project({ pizza_ingredients: 1, total_price: 1 })
-      .toArray();
+    const match: Record<string, any> = {
+      pizza_ingredients: { $exists: true },
+      total_price: { $type: "number", $gte: 0 },
+    };
 
-    const ventas: Record<string, number> = {};
-
-    for (const row of data) {
-      const ingredientes = parseIngredientes(row.pizza_ingredients);
-      for (const ing of Object.keys(ingredientes)) {
-        if (!ventas[ing]) ventas[ing] = 0;
-        ventas[ing] += row.total_price;
-      }
+    if (pizza_category) {
+      match.pizza_category = { $regex: `^${pizza_category}$`, $options: 'i' };
     }
 
-    const resumen = Object.entries(ventas).map(([ingrediente, valor]) => ({
-      label: ingrediente,
-      value: valor,
-    }));
+    if (pizza_size) {
+      match.pizza_size = { $regex: `^${pizza_size}$`, $options: 'i' };
+    }
 
-    const top = [...resumen]
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10);
+    const pipeline = [
+      { $match: match },
+      {
+        $addFields: {
+          ingredientes: { $objectToArray: "$pizza_ingredients" },
+        },
+      },
+      { $unwind: "$ingredientes" },
+      {
+        $group: {
+          _id: "$ingredientes.k",
+          value: { $sum: "$total_price" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          label: "$_id",
+          value: 1,
+        },
+      },
+    ];
 
-    const bottom = [...resumen]
-      .sort((a, b) => a.value - b.value)
-      .slice(0, 10);
+    const resumen = await db.collection("menu").aggregate(pipeline).toArray();
+
+    const top = [...resumen].sort((a, b) => b.value - a.value).slice(0, 10);
+    const bottom = [...resumen].sort((a, b) => a.value - b.value).slice(0, 10);
 
     return NextResponse.json({ top, bottom });
   } catch (error: any) {

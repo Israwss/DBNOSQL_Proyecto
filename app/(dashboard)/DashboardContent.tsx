@@ -10,18 +10,17 @@ import Button from '@mui/material/Button';
 import dynamic from 'next/dynamic';
 import TopPizzasChart from './TopPizzasChart';
 import PizzaEvaluationChart from './PizzaEvaluationChart';
-import TopIngredientesChart from './TopIngredientesChart';
-import TopPizzasLealesChart from './TopPizzasLealesChart';
-import TiempoPreparacionChart from './TiempoPreparacionChart';
+
 import PizzaSizeViolinChart from './PizzaSizeViolinChart';
 import TopIngredientesPrepChart from './TopIngredientesPrepChart';
-import HistogramaPreparacionChart from './HistogramaPreparacionChart';
 import IngredientesFunnelChart from './IngredientesFunnelChart';
 import RecomendadorIngredientes from './RecomendardorIngredientes';
 import HourChart from './HourChart';
 import DayChart from './DayChart';
 import KpiCards from './KpiCards';
 import SeasonChart from './SeasonChart'; // Ensure this path is correct
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from 'next/link';
 
 
 const WeeklyHeatmap = dynamic(() => import('./WeeklyHeatmap'), { ssr: false });
@@ -67,6 +66,11 @@ export default function DashboardContent() {
             <Grid container spacing={2} columns={12} sx={{ mb: 2 }}>
               {page === 0 && (
                 <Box sx={{ flexGrow: 1 }}>
+                  <Breadcrumbs>
+        <Link href="/">Dashboard</Link>
+        <Typography>Análisis de ventas</Typography>
+      </Breadcrumbs>
+      <Typography variant="h4" sx={{mb:3}}>Análisis de Ventas</Typography>
                   {/* ✅ KPI Cards */}
                   <KpiCards />
 
@@ -106,52 +110,55 @@ export default function DashboardContent() {
 
               {page === 1 && (
                 <Box sx={{ flexGrow: 1 }}>
+   <Breadcrumbs>
+        <Link href="/">Dashboard</Link>
+        <Typography>Análisis de Productos</Typography>
+      </Breadcrumbs>
+      <Typography variant="h4" sx={{mb:3}}>Análisis de Productos</Typography>
+
+                  
+                  
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 6 }}sx={{ mb: 2 ,mt: 2}}>
+                    <Grid size={{ xs: 12 }}sx={{ mb: 4 ,mt: 2}}>
+                       <PizzaEvaluationChart />
+                    </Grid>
+                    <Grid size={{ xs: 12}} sx={{ mb: 2 ,mt: 3}}>
                       <TopPizzasChart />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }} sx={{ mb: 2 ,mt: 2}}>
-                      <PizzaEvaluationChart />
-                 </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}sx={{ mb: 2 ,mt: 3}}>
-                      <TopIngredientesChart />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}sx={{ mb: 2 ,mt: 3}}>
-                      <TopPizzasLealesChart />
-                    </Grid>
+                     <Grid size={{ xs: 12 }} sx={{ mb: 4 }}>
+                    <IngredientesFunnelChart />
+                      </Grid>
+                    
                   </Grid>
                 </Box>
               )}
 
               {page === 2 && (
                 <Box sx={{ flexGrow: 1 }}>
+
+   <Breadcrumbs>
+        <Link href="/">Dashboard</Link>
+        <Typography>Análisis de Productos</Typography>
+      </Breadcrumbs>
+      <Typography variant="h4" sx={{mb:3}}>Análisis de Productos</Typography>
+                  
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <TiempoPreparacionChart />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    
+                    <Grid size={{ xs: 12}}>
                       <PizzaSizeViolinChart />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12}}>
                       <TopIngredientesPrepChart />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <HistogramaPreparacionChart />
+                    <Grid size={{ xs: 12}}>
+                     <RecomendadorIngredientes />
                     </Grid>
+                    
                   </Grid>
                 </Box>
               )}
 
-              {page === 3 && (
-                 <Box sx={{ flexGrow: 1 }}>
-                  <Grid size={{ xs: 12 }} sx={{ mb: 4 }}>
-                    <IngredientesFunnelChart />
-                  </Grid>
-                  <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-                    <RecomendadorIngredientes />
-                  </Grid>
-                </Box>
-              )}
+            
             </Grid>
 
             {/* 🔸 Controles de navegación */}

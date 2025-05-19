@@ -1,12 +1,19 @@
 'use client';
 
-import * as React from 'react';
-import { ScatterChart } from '@mui/x-charts/ScatterChart';
-import { ChartsLabelCustomMarkProps } from '@mui/x-charts/ChartsLabel';
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import Exporting from 'highcharts/modules/exporting';
+import ExportData from 'highcharts/modules/export-data';
+import Accessibility from 'highcharts/modules/accessibility';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { ScatterMarkerProps } from '@mui/x-charts/ScatterChart';
+import { useTheme } from '@mui/material/styles';
 
-
+if (typeof Highcharts === 'object') {
+  Exporting(Highcharts);
+  ExportData(Highcharts);
+  Accessibility(Highcharts);
+}
 
 interface PizzaEvaluacion {
   pizza_name: string;
@@ -22,41 +29,20 @@ const coloresEstrategia: Record<string, string> = {
   Descontinuar: '#f44336',
 };
 
-// SVG paths
-const star = 'M0,-7.528L1.69,-2.326L7.16,-2.326L2.735,0.889L4.425,6.09L0,2.875L-4.425,6.09L-2.735,0.889L-7.16,-2.326L-1.69,-2.326Z';
-const diamond = 'M0,-7.423L4.285,0L0,7.423L-4.285,0Z';
-const triangle = 'M0,-7L6,5H-6Z';
+const formasEstrategia: Record<string, string> = {
+  Mantener: 'circle',
+  Promocionar: 'star',
+  'Ajustar precio': 'diamond',
+  Descontinuar: 'triangle',
+};
 
-function StarLabelMark({ color, ...props }: ChartsLabelCustomMarkProps) {
-  return (
-    <svg viewBox="-8 -8 16 16">
-      <path d={star} fill={color} {...props} />
-    </svg>
-  );
-}
+export default function PizzaEvaluationHighcharts() {
+  const [data, setData] = useState<PizzaEvaluacion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
-function DiamondLabelMark({ color, ...props }: ChartsLabelCustomMarkProps) {
-  return (
-    <svg viewBox="-8 -8 16 16">
-      <path d={diamond} fill={color} {...props} />
-    </svg>
-  );
-}
-
-function TriangleLabelMark({ color, ...props }: ChartsLabelCustomMarkProps) {
-  return (
-    <svg viewBox="-8 -8 16 16">
-      <path d={triangle} fill={color} {...props} />
-    </svg>
-  );
-}
-
-
-export default function PizzaEvaluationChart() {
-  const [data, setData] = React.useState<PizzaEvaluacion[]>([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('/api/evaluacion-pizzas')
       .then((res) => res.json())
       .then((json) => {
@@ -81,119 +67,143 @@ export default function PizzaEvaluationChart() {
     return <Typography>No data available</Typography>;
   }
 
-  const series = [
-    {
-      id: 'Mantener',
-      label: 'Mantener',
+  const series = ['Mantener', 'Promocionar', 'Ajustar precio', 'Descontinuar'].map(
+    (estrategia) => ({
+      name: estrategia,
+      color: coloresEstrategia[estrategia],
+      marker: {
+        symbol: formasEstrategia[estrategia],
+      },
       data: data
-        .filter((item) => item.estrategia === 'Mantener')
+        .filter((item) => item.estrategia === estrategia)
         .map((item) => ({
           x: item.total_unidades,
           y: item.precio_promedio,
-          id: item.pizza_name,
+          name: item.pizza_name,
         })),
-      color: coloresEstrategia['Mantener'],
-      markerSize: 16, 
+    })
+  );
+
+  const options: Highcharts.Options = {
+    chart: {
+      type: 'scatter',
+      zoomType: 'xy',
+      backgroundColor: isDark ? '#121212' : 'transparent',
+      style: {
+        fontFamily: 'Arial',
+      },
+      height: 420,
     },
-    {
-      id: 'Promocionar',
-      label: 'Promocionar',
-      data: data
-        .filter((item) => item.estrategia === 'Promocionar')
-        .map((item) => ({
-          x: item.total_unidades,
-          y: item.precio_promedio,
-          id: item.pizza_name,
-        })),
-      color: coloresEstrategia['Promocionar'],
-      labelMarkType: StarLabelMark,
-      markerSize: 16, 
+    title: {
+      text: 'Estrategia de Producto por Pizza',
+      style: {
+        fontSize: '18px',
+        fontFamily: 'Arial Black',
+        color: isDark ? '#fff' : '#000',
+      },
     },
-    {
-      id: 'Ajustar precio',
-      label: 'Ajustar precio',
-      data: data
-        .filter((item) => item.estrategia === 'Ajustar precio')
-        .map((item) => ({
-          x: item.total_unidades,
-          y: item.precio_promedio,
-          id: item.pizza_name,
-        })),
-      color: coloresEstrategia['Ajustar precio'],
-      labelMarkType: DiamondLabelMark,
-      markerSize: 16, 
+    xAxis: {
+      title: {
+        text: 'Total unidades vendidas',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          fontFamily: 'Arial Black',
+          color: isDark ? '#fff' : '#000',
+        },
+      },
+      labels: {
+        style: {
+          color: isDark ? '#ccc' : '#333',
+        },
+      },
+      gridLineColor: isDark ? '#444' : '#eee',
+      lineColor: isDark ? '#888' : '#ccc',
     },
-    {
-      id: 'Descontinuar',
-      label: 'Descontinuar',
-      data: data
-        .filter((item) => item.estrategia === 'Descontinuar')
-        .map((item) => ({
-          x: item.total_unidades,
-          y: item.precio_promedio,
-          id: item.pizza_name,
-        })),
-      color: coloresEstrategia['Descontinuar'],
-      labelMarkType: TriangleLabelMark,
-      markerSize: 16, 
+    yAxis: {
+      title: {
+        text: 'Precio promedio ($)',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          fontFamily: 'Arial Black',
+          color: isDark ? '#fff' : '#000',
+        },
+      },
+      labels: {
+        style: {
+          color: isDark ? '#ccc' : '#333',
+        },
+      },
+      gridLineColor: isDark ? '#444' : '#eee',
+      lineColor: isDark ? '#888' : '#ccc',
     },
-  ];
-  function CustomMarker({
-  x,
-  y,
-  size,
-  seriesId,
-  isHighlighted,
-  isFaded,
-  color,
-}: ScatterMarkerProps) {
-  const pathMap: Record<string, string> = {
-    Promocionar: star,
-    'Ajustar precio': diamond,
-    Descontinuar: triangle,
-    Mantener: '', // círculo por defecto (no path)
+    tooltip: {
+      useHTML: true,
+      backgroundColor: isDark ? '#333' : '#fff',
+      borderColor: isDark ? '#888' : '#ccc',
+      style: {
+        color: isDark ? '#fff' : '#000',
+        fontFamily: 'Arial',
+      },
+      formatter: function () {
+        return `
+          <strong>${this.point.name}</strong><br/>
+          Estrategia: <strong>${this.series.name}</strong><br/>
+          Total unidades vendidas: <strong>${this.point.x}</strong><br/>
+          Precio promedio: <strong>$${this.point.y.toFixed(2)}</strong>
+        `;
+      },
+    },
+    legend: {
+      itemStyle: {
+        color: isDark ? '#fff' : '#000',
+      },
+    },
+    plotOptions: {
+      scatter: {
+        marker: {
+          radius: 6,
+          lineWidth: 1,
+        },
+        states: {
+          hover: {
+            enabled: true,
+            lineWidth: 2,
+          },
+        },
+      },
+    },
+    series,
+    credits: { enabled: false },
+    exporting: {
+      enabled: true,
+      buttons: {
+        contextButton: {
+          symbolStroke: isDark ? '#ccc' : '#000',
+          theme: {
+            fill: isDark ? '#222' : '#f7f7f7',
+            stroke: 'none',
+            states: {
+              hover: {
+                fill: isDark ? '#333' : '#e6e6e6',
+              },
+              select: {
+                fill: isDark ? '#444' : '#d0d0d0',
+              },
+            },
+          },
+        },
+      },
+    },
+    accessibility: {
+      enabled: true,
+    },
   };
 
-  const transform = `translate(${x}, ${y})`;
-  const scale = (isHighlighted ? 1.2 : 1) * size;
-  const shape = pathMap[seriesId as string];
-
-  if (!shape) {
-    // círculo por defecto
-    return (
-      <circle
-        cx={x}
-        cy={y}
-        r={size / 2}
-        fill={color}
-        opacity={isFaded ? 0.3 : 1}
-      />
-    );
-  }
-
   return (
-    <g transform={transform} fill={color} opacity={isFaded ? 0.3 : 1}>
-      <path d={shape} transform={`scale(${scale / 10})`} />
-    </g>
-  );
-}
-
-
-  return (
-    <Box sx={{ width: '100%', height: 320 }}>
-      <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
-        Estrategia de Producto por Pizza
-      </Typography>
-      <ScatterChart
-  series={series}
-  xAxis={[{ label: 'Total unidades vendidas' }]}
-  yAxis={[{ label: 'Precio promedio ($)' }]}
-  height={400}
-  margin={{ top: 40, right: 30, left: 70, bottom: 50 }}
-  grid={{ horizontal: true, vertical: true }}
-  slots={{ marker: CustomMarker }}
-/>
-
+    <Box sx={{ width: '100%' }}>
+      <HighchartsReact highcharts={Highcharts} options={options} />
     </Box>
   );
 }

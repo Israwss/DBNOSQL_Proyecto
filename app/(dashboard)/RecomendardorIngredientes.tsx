@@ -13,44 +13,39 @@ interface Recomendacion {
 
 export default function RecomendadorIngredientes() {
   const [ingredientes, setIngredientes] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [loadingIngredientes, setLoadingIngredientes] = React.useState(true);
   const [ingrediente, setIngrediente] = React.useState<string | null>(null);
   const [resultados, setResultados] = React.useState<Recomendacion[]>([]);
+  const [loadingResultados, setLoadingResultados] = React.useState(false);
 
   React.useEffect(() => {
     fetch('/api/ingredientes/list')
       .then((res) => res.json())
       .then(setIngredientes)
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingIngredientes(false));
   }, []);
 
   const handleSeleccion = async (ing: string | null) => {
     setIngrediente(ing);
     if (!ing) return;
     setResultados([]);
+    setLoadingResultados(true);
 
     try {
       const res = await fetch(`/api/ingredientes/recomendaciones?ingrediente=${encodeURIComponent(ing)}`);
-      if (!res.ok) {
-        console.error('API error:', res.statusText);
-        return;
-      }
-
       const data = await res.json();
-      if (!Array.isArray(data)) {
-        console.error('Respuesta inesperada del servidor:', data);
-        return;
-      }
 
-      setResultados(
-        data.map((item: any, i: number) => ({
+      if (Array.isArray(data)) {
+        setResultados(data.map((item, i) => ({
           id: i + 1,
           combinacion: item.itemset.join(', '),
           promedio_ventas: parseFloat(item.promedio.toFixed(2)),
-        }))
-      );
+        })));
+      }
     } catch (err) {
       console.error('Error al obtener recomendaciones:', err);
+    } finally {
+      setLoadingResultados(false);
     }
   };
 
@@ -62,14 +57,15 @@ export default function RecomendadorIngredientes() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
-      {loading ? (
+      {loadingIngredientes ? (
         <CircularProgress />
       ) : (
         <Autocomplete
           options={ingredientes}
           sx={{ width: 400, mt: 2 }}
           onChange={(_, value) => handleSeleccion(value)}
-          renderInput={(params) => <TextField {...params} label="Elige un ingrediente" />}
+          renderInput={(params) => <TextField {...params} label="Elige un ingrediente" size="small" />}
+          disableClearable
         />
       )}
 
@@ -77,13 +73,18 @@ export default function RecomendadorIngredientes() {
         <Typography variant="h6" sx={{ mb: 2 }}>
           Combinaciones recomendadas y su promedio de ventas
         </Typography>
+
         <Box sx={{ height: 400 }}>
-          <DataGrid
-            rows={resultados}
-            columns={columns}
-            pageSizeOptions={[5, 10]}
-            disableRowSelectionOnClick
-          />
+          {loadingResultados ? (
+            <CircularProgress />
+          ) : (
+            <DataGrid
+              rows={resultados}
+              columns={columns}
+              pageSizeOptions={[5, 10]}
+              disableRowSelectionOnClick
+            />
+          )}
         </Box>
       </Box>
     </Box>
